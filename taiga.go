@@ -13,7 +13,7 @@ var taigaListFilename string
 var taigaDBFilename string
 
 func findInstallDir() {
-	taigaInstallDir = filepath.Join(os.Getenv("APPDATA"), "Taiga", "asdf")
+	taigaInstallDir = filepath.Join(os.Getenv("APPDATA"), "Taiga")
 	for _, err := os.Stat(taigaInstallDir); os.IsNotExist(err); _, err = os.Stat(taigaInstallDir) {
 		fmt.Printf("INFO: Path does not exist: %s\n", taigaInstallDir)
 		fmt.Printf("Please specify the install directory of Taiga: ")

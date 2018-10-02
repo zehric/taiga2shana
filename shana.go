@@ -26,6 +26,7 @@ func Login() {
 		fmt.Scanln(&username)
 	}
 	fm.Input("username", username)
+
 	if password == "" {
 		fmt.Printf("ShanaProject Password: ")
 		pwbytes, _ := gopass.GetPasswd()
