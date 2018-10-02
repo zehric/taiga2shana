@@ -11,17 +11,12 @@ var password string
 var filename string
 
 func main() {
-	flag.StringVar(&username, "user", "", "username for ShanaProject")
-	flag.StringVar(&password, "pass", "", "(optional) password for ShanaProject; if not specified,"+
+	flag.StringVar(&username, "user", "", "username for ShanaProject; if not specified,"+
+		"will prompt user")
+	flag.StringVar(&password, "pass", "", "password for ShanaProject; if not specified,"+
 		" will prompt user")
-	flag.StringVar(&filename, "list", "", "(optional) custom anime list location if user does not"+
-		" have Taiga")
+	flag.StringVar(&filename, "list", "", "custom anime list location if user does not have Taiga")
 	flag.Parse()
-	if username == "" {
-		fmt.Println("Please enter in a ShanaProject username as a command line option (-user).")
-		flag.Usage()
-		os.Exit(1)
-	}
 	Login()
 
 	var names []string

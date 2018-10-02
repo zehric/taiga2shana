@@ -20,6 +20,11 @@ func Login() {
 	if err != nil {
 		panic(err)
 	}
+
+	if username == "" {
+		fmt.Printf("ShanaProject Username: ")
+		fmt.Scanln(&username)
+	}
 	fm.Input("username", username)
 	if password == "" {
 		fmt.Printf("ShanaProject Password: ")
@@ -33,7 +38,7 @@ func Login() {
 
 	bow.Open(basePath + "follows/list/")
 	if bow.Url().Path != "/follows/list/" {
-		fmt.Println("ERROR: Incorrect password, or something went wrong.")
+		fmt.Println("ERROR: Incorrect password.")
 		os.Exit(1)
 	}
 }
