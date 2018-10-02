@@ -12,12 +12,12 @@ func GetUserSelection(selections []string) (num int) {
 	for i, match := range selections {
 		fmt.Printf("%d: %v\n", i, match)
 	}
+	var err error
 	for {
 		fmt.Printf("Please enter the number corresponding to the desired entry (%d-%d): ",
 			0, len(selections)-1)
 		var selection string
 		fmt.Scanln(&selection)
-		var err error
 		num, err = strconv.Atoi(selection)
 		if err == nil && num >= 0 && num < len(selections) {
 			return
