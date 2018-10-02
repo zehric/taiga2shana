@@ -8,14 +8,26 @@ import (
 	"path/filepath"
 )
 
-var TaigaListFilename string
-var TaigaDBFilename string
+var taigaInstallDir string
+var taigaListFilename string
+var taigaDBFilename string
+
+func findInstallDir() {
+	taigaInstallDir = filepath.Join(os.Getenv("APPDATA"), "Taiga", "asdf")
+	for _, err := os.Stat(taigaInstallDir); os.IsNotExist(err); _, err = os.Stat(taigaInstallDir) {
+		fmt.Printf("INFO: Path does not exist: %s\n", taigaInstallDir)
+		fmt.Printf("Please specify the install directory of Taiga: ")
+		fmt.Scanln(&taigaInstallDir)
+	}
+}
 
 func findAnimeList() {
-	TaigaListFilename = filepath.Join(os.Getenv("APPDATA"), "Taiga", "data", "user")
-	dir, err := ioutil.ReadDir(TaigaListFilename)
+	taigaListFilename = filepath.Join(taigaInstallDir, "data", "user")
+	dir, err := ioutil.ReadDir(taigaListFilename)
 	if err != nil {
-		panic(err)
+		fmt.Printf("ERROR: Path does not exist: %s\n", taigaListFilename)
+		fmt.Println("Make sure your Taiga install directory contains Taiga.exe and a folder called data")
+		os.Exit(1)
 	}
 	var profileName string
 	if len(dir) == 0 {
@@ -30,11 +42,11 @@ func findAnimeList() {
 	} else {
 		profileName = dir[0].Name()
 	}
-	TaigaListFilename = filepath.Join(TaigaListFilename, profileName, "anime.xml")
+	taigaListFilename = filepath.Join(taigaListFilename, profileName, "anime.xml")
 }
 
 func findDatabase() {
-	TaigaDBFilename = filepath.Join(os.Getenv("APPDATA"), "Taiga", "data", "db", "anime.xml")
+	taigaDBFilename = filepath.Join(taigaInstallDir, "data", "db", "anime.xml")
 }
 
 type UserAnime struct {
@@ -50,10 +62,11 @@ type DBAnime struct {
 }
 
 func ReadTaigaList() []string {
+	findInstallDir()
 	findAnimeList()
 	findDatabase()
 
-	userAnimeXml, err := os.Open(TaigaListFilename)
+	userAnimeXml, err := os.Open(taigaListFilename)
 	if err != nil {
 		return nil
 	}
@@ -77,7 +90,7 @@ func ReadTaigaList() []string {
 	}
 	userAnimeXml.Close()
 
-	dbAnimeXml, err := os.Open(TaigaDBFilename)
+	dbAnimeXml, err := os.Open(taigaDBFilename)
 	if err != nil {
 		return nil
 	}
