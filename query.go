@@ -18,7 +18,7 @@ type Anime struct {
 }
 
 func searchAnime(name string) (body []Anime) {
-	if len(name) == 0 {
+	if len(name) < 3 {
 		return
 	}
 
@@ -34,7 +34,11 @@ func searchAnime(name string) (body []Anime) {
 			panic(err)
 		}
 		if len(body) == 0 && len(name) > 0 {
-			name = name[:strings.LastIndex(name, " ")]
+			idx := strings.LastIndexAny(name, " `~!@#$%^&*()_+-=[]{}\\|;:'\",<.>/?")
+			if idx == -1 {
+				return
+			}
+			name = name[:idx]
 			name = strings.TrimSpace(name)
 			return searchAnime(name)
 		}
@@ -58,7 +62,9 @@ func GetAnimeIds(names []string) (ids []Anime) {
 				selections = append(selections, anime.Value)
 			}
 			i := GetUserSelection(selections)
-			ids = append(ids, body[i])
+			if i > 0 {
+				ids = append(ids, body[i])
+			}
 		} else {
 			if !strings.EqualFold(body[0].Value, name) {
 				fmt.Printf("WARNING: matched anime title is not the same as requested title:\n%s\n%s\n",

@@ -12,7 +12,7 @@ var filename string
 
 func main() {
 	flag.StringVar(&username, "user", "", "username for ShanaProject; if not specified,"+
-		"will prompt user")
+		" will prompt user")
 	flag.StringVar(&password, "pass", "", "password for ShanaProject; if not specified,"+
 		" will prompt user")
 	flag.StringVar(&filename, "list", "", "custom anime list location if user does not have Taiga")
@@ -34,5 +34,7 @@ func main() {
 	}
 	ids := GetAnimeIds(names)
 
-	AddAnime(ids)
+	follows := GetFollows()
+
+	AddAnime(ids, follows)
 }

@@ -7,6 +7,7 @@ import (
 	"gopkg.in/headzoo/surf.v1"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const basePath = "https://www.shanaproject.com/"
@@ -44,10 +45,32 @@ func Login() {
 	}
 }
 
-func AddAnime(ids []Anime) {
+func GetFollows() map[int]bool {
+	ids := make(map[int]bool)
+	fmt.Println()
+	fmt.Println("#### Finding currently followed anime ####")
+    bow.Open(basePath + "follows/list/")
+	links := bow.Links()
+	for _, link := range links {
+		url := strings.Replace(link.URL.Path, "/series/", "", -1)
+		url = strings.Replace(url, "/", "", -1)
+		num, err := strconv.Atoi(url)
+		if len(url) > 0 && err == nil {
+            ids[num] = true
+		}
+	}
+	return ids
+}
+
+func AddAnime(ids []Anime, follows map[int]bool) {
 	fmt.Println()
 	fmt.Println("#### Begining addition to ShanaProject follows ####")
 	for _, anime := range ids {
+		_, ok := follows[anime.Id]
+		if ok {
+			fmt.Printf("INFO: %s already in follows, skipping\n", anime.Value)
+			continue
+		}
 		bow.Open(basePath + "follows/add/")
 		fmt.Printf("INFO: add %s\n", anime.Value)
 		fm, err := bow.Form("form.form")

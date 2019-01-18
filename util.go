@@ -14,16 +14,15 @@ func GetUserSelection(selections []string) (num int) {
 	}
 	var err error
 	for {
-		fmt.Printf("Please enter the number corresponding to the desired entry (%d-%d): ",
+		fmt.Printf("Please enter the number corresponding to the desired entry (%d-%d) or -1 if none match: ",
 			0, len(selections)-1)
 		var selection string
 		fmt.Scanln(&selection)
 		num, err = strconv.Atoi(selection)
-		if err == nil && num >= 0 && num < len(selections) {
+		if err == nil && num < len(selections) {
 			return
 		}
 	}
-	return
 }
 
 func ReadCustomList(filename string) (names []string) {
