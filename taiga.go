@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
+	"golang.org/x/text/unicode/norm"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -56,12 +57,13 @@ type UserAnime struct {
 }
 
 type DBAnime struct {
-	XMLName xml.Name `xml:"anime"`
-	Id      int      `xml:"id"`
-	Title   string   `xml:"title"`
+	XMLName  xml.Name `xml:"anime"`
+	Id       int      `xml:"id"`
+	Title    string   `xml:"title"`
+	Japanese string   `xml:"japanese"`
 }
 
-func ReadTaigaList() []string {
+func ReadTaigaList() []DBAnime {
 	findInstallDir()
 	findAnimeList()
 	findDatabase()
@@ -95,7 +97,7 @@ func ReadTaigaList() []string {
 		return nil
 	}
 	decoder = xml.NewDecoder(dbAnimeXml)
-	var names []string
+	var names []DBAnime
 	var dbElem DBAnime
 	for {
 		t, _ := decoder.Token()
@@ -108,7 +110,8 @@ func ReadTaigaList() []string {
 				decoder.DecodeElement(&dbElem, &se)
 				for _, id := range watchingIds {
 					if dbElem.Id == id {
-						names = append(names, dbElem.Title)
+						dbElem.Japanese = norm.NFKD.String(dbElem.Japanese)
+						names = append(names, dbElem)
 						continue
 					}
 				}

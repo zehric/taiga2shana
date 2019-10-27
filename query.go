@@ -15,6 +15,7 @@ const searchPath = basePath + "ajax/search/title/?term="
 type Anime struct {
 	Id    int
 	Value string
+	LowQ  bool
 }
 
 func searchAnime(name string) (body []Anime) {
@@ -49,28 +50,45 @@ func searchAnime(name string) (body []Anime) {
 	return
 }
 
-func GetAnimeIds(names []string) (ids []Anime) {
-	println("#### Searching ShanaProject for anime in your list ####")
+func searchResolutions(japanese string) string {
+	for _, res := range Resolutions {
+		if strings.Contains(res.Name, japanese) || strings.Contains(japanese, res.Name) {
+			return res.Res
+		}
+	}
+	return ""
+}
+
+func GetAnimeIds(names []DBAnime) (ids map[int]Anime) {
+	ids = make(map[int]Anime)
+	fmt.Println()
+	fmt.Println("#### Searching ShanaProject for anime in your list ####")
 	for _, name := range names {
-		body := searchAnime(name)
+		body := searchAnime(name.Title)
+		idx := -1
 		if len(body) == 0 {
-			fmt.Printf("WARNING: Could not find match on ShanaProject for %s\n", name)
+			fmt.Printf("WARNING: Could not find match on ShanaProject for %s\n", name.Title)
+			continue
 		} else if len(body) > 1 {
-			fmt.Printf("INFO: Found multiple matches on ShanaProject for %s\n", name)
+			fmt.Printf("INFO: Found multiple matches on ShanaProject for %s\n", name.Title)
 			var selections []string
 			for _, anime := range body {
 				selections = append(selections, anime.Value)
 			}
-			i := GetUserSelection(selections)
-			if i > 0 {
-				ids = append(ids, body[i])
-			}
+			idx = GetUserSelection(selections)
 		} else {
-			if !strings.EqualFold(body[0].Value, name) {
+			if !strings.EqualFold(body[0].Value, name.Title) {
 				fmt.Printf("WARNING: matched anime title is not the same as requested title:\n%s\n%s\n",
-					body[0].Value, name)
+					body[0].Value, name.Title)
 			}
-			ids = append(ids, body[0])
+			idx = 0
+		}
+		if idx >= 0 {
+			body[idx].LowQ = false
+			if searchResolutions(name.Japanese) == "HV1280" {
+				body[idx].LowQ = true
+			}
+			ids[body[idx].Id] = body[idx]
 		}
 	}
 	return

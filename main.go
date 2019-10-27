@@ -9,6 +9,7 @@ import (
 var username string
 var password string
 var filename string
+var autoremove bool
 
 func main() {
 	flag.StringVar(&username, "user", "", "username for ShanaProject; if not specified,"+
@@ -16,10 +17,11 @@ func main() {
 	flag.StringVar(&password, "pass", "", "password for ShanaProject; if not specified,"+
 		" will prompt user")
 	flag.StringVar(&filename, "list", "", "custom anime list location if user does not have Taiga")
+	flag.BoolVar(&autoremove, "autoremove", false, "automatically remove all anime in follows but not in animelist")
 	flag.Parse()
 	Login()
 
-	var names []string
+	var names []DBAnime
 
 	if filename == "" {
 		names = ReadTaigaList()
@@ -29,12 +31,16 @@ func main() {
 				"of anime names or search terms.")
 			os.Exit(1)
 		}
+		GetResolutions() // fills Resolutions array
 	} else {
 		names = ReadCustomList(filename)
 	}
+
 	ids := GetAnimeIds(names)
 
 	follows := GetFollows()
 
 	AddAnime(ids, follows)
+
+	RemoveAnime(ids, autoremove)
 }

@@ -25,16 +25,20 @@ func GetUserSelection(selections []string) (num int) {
 	}
 }
 
-func ReadCustomList(filename string) (names []string) {
+func ReadCustomList(filename string) (names []DBAnime) {
 	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
+	var dbElem DBAnime
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		names = append(names, strings.TrimSpace(scanner.Text()))
+		dbElem.Title = strings.TrimSpace(scanner.Text())
+		dbElem.Japanese = ""
+		names = append(names, dbElem)
 	}
 
 	if err := scanner.Err(); err != nil {
