@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"os"
 )
 
 var username string
@@ -25,15 +23,20 @@ func main() {
 
 	if filename == "" {
 		names = ReadTaigaList()
-		if names == nil {
-			fmt.Println("I can't seem to find a valid Taiga installation on your computer. Please provide an " +
-				"anime list file manually with the -list option. The anime list should be a newline separated list " +
-				"of anime names or search terms.")
-			os.Exit(1)
+		if names != nil {
+			GetResolutions() // fills Resolutions array
+		} else {
+			names = ReadCustomList("anime.txt")
 		}
-		GetResolutions() // fills Resolutions array
 	} else {
 		names = ReadCustomList(filename)
+	}
+
+	if names == nil {
+		PrintAndExit("I can't seem to find a valid Taiga installation or anime list on your computer. Please provide an " +
+			"anime list file manually with the -list option, or create a file called 'anime.txt' in the " +
+			"same directory as this program. The anime list should be a newline separated list " +
+			"of anime names or search terms.")
 	}
 
 	ids := GetAnimeIds(names)

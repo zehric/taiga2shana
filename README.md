@@ -3,6 +3,8 @@ taiga2shana
 
 use taiga anime list and import it to shanaproject
 
+simplest way to run is to just double click taiga2shana.exe
+
 ```
 taiga2shana -user "shanaproject_username" -pass "shanaproject_password"
 ```

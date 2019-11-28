@@ -27,8 +27,7 @@ func findAnimeList() {
 	dir, err := ioutil.ReadDir(taigaListFilename)
 	if err != nil {
 		fmt.Printf("ERROR: Path does not exist: %s\n", taigaListFilename)
-		fmt.Println("Make sure your Taiga install directory contains Taiga.exe and a folder called data")
-		os.Exit(1)
+		PrintAndExit("Make sure your Taiga install directory contains Taiga.exe and a folder called data")
 	}
 	var profileName string
 	if len(dir) == 0 {

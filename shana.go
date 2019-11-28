@@ -5,7 +5,6 @@ import (
 	"github.com/headzoo/surf/browser"
 	"github.com/howeyc/gopass"
 	"gopkg.in/headzoo/surf.v1"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -19,7 +18,7 @@ func Login() {
 	bow.Open(basePath + "login/")
 	fm, err := bow.Form("form.form")
 	if err != nil {
-		panic(err)
+		PrintAndExit(err.Error())
 	}
 
 	if username == "" {
@@ -35,13 +34,12 @@ func Login() {
 	}
 	fm.Input("password", password)
 	if err := fm.Submit(); err != nil {
-		panic(err)
+		PrintAndExit(err.Error())
 	}
 
 	bow.Open(basePath + "follows/list/")
 	if bow.Url().Path != "/follows/list/" {
-		fmt.Println("ERROR: Incorrect password.")
-		os.Exit(1)
+		PrintAndExit("ERROR: Incorrect username or password.")
 	}
 }
 
@@ -79,7 +77,7 @@ func AddAnime(ids map[int]Anime, follows map[int]Anime) {
 		fmt.Printf("INFO: add %s\n", anime.Value)
 		fm, err := bow.Form("form.form")
 		if err != nil {
-			panic(err)
+			PrintAndExit(err.Error())
 		}
 
 		/* TODO: make these customizable from the command line */
@@ -97,7 +95,7 @@ func AddAnime(ids map[int]Anime, follows map[int]Anime) {
 		fm.UnCheck("get_any_quality")
 
 		if err = fm.Submit(); err != nil {
-			panic(err)
+			PrintAndExit(err.Error())
 		}
 	}
 }

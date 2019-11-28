@@ -4,8 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
+	"unsafe"
 )
 
 func GetUserSelection(selections []string) (num int) {
@@ -28,7 +31,7 @@ func GetUserSelection(selections []string) (num int) {
 func ReadCustomList(filename string) (names []DBAnime) {
 	file, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		return
 	}
 	defer file.Close()
 
@@ -42,7 +45,30 @@ func ReadCustomList(filename string) (names []DBAnime) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		panic(err)
+		PrintAndExit(err.Error())
 	}
 	return
+}
+
+func isDoubleClickRun() bool {
+	kernel32 := syscall.NewLazyDLL("kernel32.dll")
+	lp := kernel32.NewProc("GetConsoleProcessList")
+	if lp != nil {
+		var pids [2]uint32
+		var maxCount uint32 = 2
+		ret, _, _ := lp.Call(uintptr(unsafe.Pointer(&pids)), uintptr(maxCount))
+		if ret > 1 {
+			return false
+		}
+	}
+	return true
+}
+
+func PrintAndExit(message string) {
+	fmt.Println(message)
+	if runtime.GOOS == "windows" && isDoubleClickRun() {
+		fmt.Print("Press 'Enter' to continue...")
+		bufio.NewReader(os.Stdin).ReadBytes('\n')
+	}
+	os.Exit(1)
 }

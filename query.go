@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
@@ -26,13 +25,13 @@ func searchAnime(name string) (body []Anime) {
 	escaped := url.QueryEscape(name)
 	resp, err := http.Get(searchPath + escaped)
 	if err != nil {
-		panic(err)
+		PrintAndExit(err.Error())
 	}
 	if resp.StatusCode == http.StatusOK {
 		bytes, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
 		if err := json.Unmarshal(bytes, &body); err != nil {
-			panic(err)
+			PrintAndExit(err.Error())
 		}
 		if len(body) == 0 && len(name) > 0 {
 			idx := strings.LastIndexAny(name, " `~!@#$%^&*()_+-=[]{}\\|;:'\",<.>/?")
@@ -44,8 +43,7 @@ func searchAnime(name string) (body []Anime) {
 			return searchAnime(name)
 		}
 	} else {
-		fmt.Printf("ERROR: Status code was %d on search\n", resp.StatusCode)
-		os.Exit(1)
+		PrintAndExit(fmt.Sprintf("ERROR: Status code was %d on search", resp.StatusCode))
 	}
 	return
 }
